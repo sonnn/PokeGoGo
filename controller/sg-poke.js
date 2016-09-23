@@ -1,10 +1,13 @@
 'use strict';
 const request = require('request');
 
-const POKEMON_LIST_URL = 'https://sgpokemap.com/pokemon_list.json?v20';
-const POKEMON_POSITION_URL = 'https://sgpokemap.com/query2.php?since=0';
-const DEFAULT_FILTER = [
-  1, 2, 3, 4, 6, 7, 9, 59, 65, 103, 113, 130, 131, 134, 135, 136, 137, 142, 143, 149];
+const POKEMON_LIST = require('./poke-list');
+const POKEMON_POSITION_URL = 'https://sg-pogo.appx.hk/top';
+
+function getGoogleDirectionAPI(origin, destination) {
+  const api = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=walking&key=AIzaSyAFBqLuINxyc1cL4zvlQeD6BpvWDEQS0P8`;
+  return api;
+}
 
 class SGPoke {
   constructor() {
@@ -12,10 +15,14 @@ class SGPoke {
   }
 
   getPokemonList() {
-    return new Promise((resolve, reject) => {
-      if (this.pokeList.length > 0) resolve(this.pokeList);
+    return new Promise((resolve) => {
+      resolve(POKEMON_LIST);
+    });
+  }
 
-      request.get(POKEMON_LIST_URL, (error, response, body) => {
+  getPokemonPosition() {
+    return new Promise((resolve, reject) => {
+      request.get(POKEMON_POSITION_URL, (error, response, body) => {
         if (error) return reject(error);
 
         // parse body
@@ -32,15 +39,29 @@ class SGPoke {
     });
   }
 
-  getPokemonPosition(filter = DEFAULT_FILTER) {
-    const filterString = filter.join(',');
-    const url = `${POKEMON_POSITION_URL}&mons=${filterString}`;
+  buildMatrix(pokemons) {
+    const len = pokemons.length;
+    const result = [];
 
-    return new Promise((resolve, reject) => {
-      request.get(url, (error, response, body) => {
-        if (error) return reject(error);
+    for (let i = 0; i < len; i++) {
+      for (let j = i + 1; j < len; j++) {
+        result.push([pokemons[i], pokemons[j]]);
+      }
+    }
+    return result;
+  }
 
-        // parse body
+  getDirectionMatrix(pokemons) {
+    const matrix = this.buildMatrix(pokemons);
+
+    return Promise.all(matrix.map(mx => new Promise((resolve, reject) => {
+      const origin = `${mx[0].a},${mx[0].o}`;
+      const dest = `${mx[1].a},${mx[1].o}`;
+      const api = getGoogleDirectionAPI(origin, dest);
+
+      request.get(api, (error, response, body) => {
+        if (error) reject(error);
+
         let res = body;
 
         try {
@@ -49,9 +70,13 @@ class SGPoke {
           return reject(err);
         }
 
-        return resolve(res.pokemons);
-      });
-    });
+        return resolve({
+          origin: mx[0],
+          destination: mx[1],
+          direction: res,
+        });
+      }); })
+    ));
   }
 }
 

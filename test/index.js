@@ -1,12 +1,10 @@
 'use strict';
 
-const SGPoke = require('../controller/sg-poke');
-const sgpoke = new SGPoke();
+const mock = require('./directions');
+const PokemonHuntPathGA = require('./simple-ga').PokemonHuntPathGA;
 
-sgpoke.getPokemonList().then(list => {
-	console.log(list);
-});
+const pokeHunt = new PokemonHuntPathGA(mock.pokemons, mock.directions);
 
-sgpoke.getPokemonPosition().then(list => {
-	console.log(list);
-});
+const min = pokeHunt.generatePopulation();
+
+console.log(min)
