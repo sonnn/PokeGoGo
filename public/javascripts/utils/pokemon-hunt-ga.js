@@ -113,7 +113,7 @@ export class Chromosome {
 
 export class PokemonHuntGA {
   constructor(
-    pokemons, directions, maxGenerationCount = 100,
+    pokemons, directions, maxGenerationCount = 1000,
     mutationRate = 0.5, crossOverRate = 0.5, populationSize = 10
   ) {
     this.directions = directions;
