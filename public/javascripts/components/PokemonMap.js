@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { Map, Marker, TileLayer, Polyline } from 'react-leaflet';
+import { Map, Marker, TileLayer, MultiPolyline } from 'react-leaflet';
 import L from 'leaflet';
 import _ from 'lodash';
 require('leaflet/dist/leaflet.css');
@@ -41,15 +41,15 @@ export class PokemonMap extends Component {
   createPolyline(chromosome) {
     if (_.isUndefined(chromosome) || _.isNull(chromosome)) return null;
     const steps = chromosome.getAllSteps();
-    const latlngList = steps.reduce((result, current) => {
+    const latlngList = steps.map(current => {
       const { start_location, end_location } = current;
-      return result.concat([
+      return [
         [start_location.lat, start_location.lng],
         [end_location.lat, end_location.lng],
-      ]);
-    }, []);
+      ];
+    });
 
-    return <Polyline positions={latlngList} />;
+    return <MultiPolyline polylines={latlngList} />;
   }
 
   render() {

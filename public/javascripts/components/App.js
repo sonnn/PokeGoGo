@@ -30,6 +30,13 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this.dispatch = props.dispatch;
+
+    this.state = {
+      maxGenerationCount: 1000,
+      mutationRate: 0.5,
+      crossOverRate: 0.5,
+      populationSize: 10,
+    };
   }
 
   componentWillMount() {
@@ -53,7 +60,9 @@ export class App extends Component {
   }
 
   hunt(pokemons, directions) {
-    const hunter = new PokemonHuntGA(pokemons, directions);
+    const { maxGenerationCount, mutationRate, crossOverRate, populationSize } = this.state;
+    const hunter = new PokemonHuntGA(pokemons, directions, maxGenerationCount,
+      mutationRate, crossOverRate, populationSize);
     const result = hunter.generatePopulation();
     this.dispatch(updatePathTable(result.reverse()));
   }
@@ -63,6 +72,8 @@ export class App extends Component {
       pokemons, pokemonPosistions, bounds, dispatch, pokemonInPath,
       directions, chromosomes, vChromosome,
     } = this.props;
+
+    const { maxGenerationCount, mutationRate, crossOverRate, populationSize } = this.state;
 
     return (
       <div className="main-app">
@@ -94,6 +105,58 @@ export class App extends Component {
           <PokemonInPathTable pokemons={pokemonInPath} />
         </div>
         <div className="row" style={{ margin: '10px' }}>
+          <div>
+            <div className="form-group">
+              <label>
+                MaxGen:
+              </label>
+              <input
+                className="form-control"
+                type="text" value={maxGenerationCount}
+                onChange={(event) => this.setState({ maxGenerationCount: event.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                MaxGen:
+              </label>
+              <input
+                className="form-control"
+                type="text" value={maxGenerationCount}
+                onChange={(event) => this.setState({ maxGenerationCount: event.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                MutationRate:
+              </label>
+              <input
+                className="form-control"
+                type="text" value={mutationRate}
+                onChange={(event) => this.setState({ mutationRate: event.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                CrossOverRate:
+              </label>
+              <input
+                className="form-control"
+                type="text" value={crossOverRate}
+                onChange={(event) => this.setState({ crossOverRate: event.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                PopulationSize:
+              </label>
+              <input
+                className="form-control"
+                type="text" value={populationSize}
+                onChange={(event) => this.setState({ populationSize: event.target.value })}
+              />
+            </div>
+          </div>
           <div>
             {(() => {
               if (directions.length === 0) return null;
