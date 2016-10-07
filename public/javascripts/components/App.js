@@ -118,16 +118,6 @@ export class App extends Component {
             </div>
             <div className="form-group">
               <label>
-                MaxGen:
-              </label>
-              <input
-                className="form-control"
-                type="text" value={maxGenerationCount}
-                onChange={(event) => this.setState({ maxGenerationCount: event.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>
                 MutationRate:
               </label>
               <input

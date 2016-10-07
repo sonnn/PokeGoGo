@@ -2,6 +2,7 @@
 const request = require('request');
 
 const POKEMON_LIST = require('./poke-list');
+const POKEMON_POSITION = require('./poke-position');
 const POKEMON_POSITION_URL = 'https://sg-pogo.appx.hk/top';
 
 function getGoogleDirectionAPI(origin, destination) {
@@ -22,20 +23,21 @@ class SGPoke {
 
   getPokemonPosition() {
     return new Promise((resolve, reject) => {
-      request.get(POKEMON_POSITION_URL, (error, response, body) => {
-        if (error) return reject(error);
-
-        // parse body
-        let res = body;
-
-        try {
-          if (typeof(res) === 'string') res = JSON.parse(body);
-        } catch (err) {
-          return reject(err);
-        }
-
-        return resolve(res);
-      });
+      // request.get(POKEMON_POSITION_URL, (error, response, body) => {
+      //   if (error) return reject(error);
+      //
+      //   // parse body
+      //   let res = body;
+      //
+      //   try {
+      //     if (typeof(res) === 'string') res = JSON.parse(body);
+      //   } catch (err) {
+      //     return reject(err);
+      //   }
+      //
+      //   return resolve(res);
+      // });
+      resolve(POKEMON_POSITION);
     });
   }
 
